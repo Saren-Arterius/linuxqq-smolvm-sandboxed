@@ -43,7 +43,7 @@ services:
     cap_add: [NET_ADMIN]                       # Needed for the iptables commands only. QQ code does not run here.
     environment: { DISPLAY: ":0" }
     command: >-
-      sh -c 'set -e; f=$$(ls /xauth/.mutter-Xwaylandauth.* 2>/dev/null | head -1);
+      sh -c 'set -e; f=$$(ls -t /xauth/.mutter-Xwaylandauth.* 2>/dev/null | head -1);
       [ -n "$$f" ] || { echo "no xauth cookie found"; exit 1; };
       chown 65534:65534 /share; install -o 0 -g 989 -m 640 "$$f" /share/.xauth;
       apk add --no-cache acl xhost iptables >/dev/null;
