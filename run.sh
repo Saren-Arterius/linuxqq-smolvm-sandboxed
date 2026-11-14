@@ -25,6 +25,12 @@ smolvm machine run --block-private --cpus 4 --mem 8192 \
     [ -s /home/qq/.machine-id ] || tr -d - < /proc/sys/kernel/random/uuid > /home/qq/.machine-id
     [ -s /home/qq/.hostname ] || echo qq > /home/qq/.hostname
     cp /home/qq/.machine-id /etc/machine-id; hostname "$(cat /home/qq/.hostname)"
+    # QQ'"'"'s native clipboard code uses X11 and crashes on copy (SIGSEGV) without a display.
+    # Xvfb stays in the VM; QQ draws and copies text over Wayland.
+    mkdir -p -m 1777 /tmp/.X11-unix
+    setpriv --reuid="$U" --regid="$G" --clear-groups --no-new-privs \
+      Xvfb :99 -nolisten tcp -screen 0 64x64x24 >/dev/null 2>&1 &
+    export DISPLAY=:99
     exec setpriv --reuid="$U" --regid="$G" --clear-groups --no-new-privs \
       waypipe --no-gpu -s /run/waypipe.sock server -- /opt/QQ/qq --no-sandbox \
         --ozone-platform=wayland --enable-wayland-ime --disable-crash-reporter'
