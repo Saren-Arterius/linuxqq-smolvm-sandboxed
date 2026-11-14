@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=QQ (smolvm)
+Comment=QQ in a smolvm microVM
+# Install with: sed "s|@DIR@|$PWD|g" qq-smolvm.desktop > ~/.local/share/applications/qq-smolvm.desktop
+Exec=@DIR@/run.sh
+Icon=qq
+Terminal=false
+Type=Application
+StartupWMClass=QQ
+Categories=Chat;Network;InstantMessaging;
+Keywords=qq;chat;im;messaging;messenger;tencent;
