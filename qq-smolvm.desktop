@@ -9,3 +9,9 @@ Type=Application
 StartupWMClass=QQ
 Categories=Chat;Network;InstantMessaging;
 Keywords=qq;chat;im;messaging;messenger;tencent;
+Actions=stop;
+
+[Desktop Action stop]
+Name=Stop QQ
+Exec=@DIR@/run.sh stop
+Icon=media-playback-stop

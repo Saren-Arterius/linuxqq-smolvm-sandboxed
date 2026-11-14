@@ -72,8 +72,10 @@ Do these steps in the project folder.
 ## Start and stop QQ
 
 To start QQ, click "QQ (smolvm)" in your app menu. You can also type `./run.sh`.
+If QQ runs, this does nothing. Two QQs that use the same `home` folder can damage it.
 
-To stop QQ, close QQ. The VM stops when QQ stops.
+To stop QQ, right-click "QQ (smolvm)" and click "Stop QQ". You can also type `./run.sh stop`.
+The "Quit" item of the dock does not always stop the VM.
 
 ## What QQ can see
 

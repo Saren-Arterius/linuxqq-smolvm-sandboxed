@@ -1,6 +1,11 @@
 #!/bin/sh
 # QQ in a smolvm microVM. Wayland goes through waypipe over one mounted socket.
 set -eu
+# [s]: so pkill doesn't match a shell whose command line has this pattern.
+vm='[s]molvm-bin machine run .*qq-waypipe'
+[ "${1-}" = stop ] && exec pkill -TERM -f "$vm"
+# ponytail: already running, do nothing. Two QQs on one ./home corrupt it. Focusing the window needs more.
+pgrep -f "$vm" >/dev/null && exit 0
 cd "$(dirname "$0")"
 mkdir -p home share
 # Delete image.tar to rebuild (for example after a new QQ.deb).
