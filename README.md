@@ -77,6 +77,11 @@ If QQ runs, this does nothing. Two QQs that use the same `home` folder can damag
 To stop QQ, right-click "QQ (smolvm)" and click "Stop QQ". You can also type `./run.sh stop`.
 The "Quit" item of the dock does not always stop the VM.
 
+About half of the starts of QQ hang before the window. The cause is not known.
+`run.sh` sees this and starts QQ again, up to five times. The window can take up to a minute.
+
+If no window comes, look in `home/qq.log`. The log of the start before it is in `home/qq.log.1`.
+
 ## What QQ can see
 
 QQ can see only these items:

@@ -27,10 +27,28 @@ smolvm machine run --block-private --cpus 4 --mem 8192 \
     cp /home/qq/.machine-id /etc/machine-id; hostname "$(cat /home/qq/.hostname)"
     # QQ'"'"'s native clipboard code uses X11 and crashes on copy (SIGSEGV) without a display.
     # Xvfb stays in the VM; QQ draws and copies text over Wayland.
+    # Log to ./home/qq.log as it happens (smolvm holds stdout until the VM exits). Last start: qq.log.1.
+    # Through a FIFO: isatty() on a virtiofs file gives EOPNOTSUPP, and waypipe 0.11 panics on it.
+    mv -f /home/qq/qq.log /home/qq/qq.log.1 2>/dev/null; mkfifo /tmp/log
+    cat /tmp/log >/home/qq/qq.log & exec >/tmp/log 2>&1; date
     mkdir -p -m 1777 /tmp/.X11-unix
     setpriv --reuid="$U" --regid="$G" --clear-groups --no-new-privs \
-      Xvfb :99 -nolisten tcp -screen 0 64x64x24 >/dev/null 2>&1 &
+      Xvfb :99 -nolisten tcp -screen 0 64x64x24 &
     export DISPLAY=:99
-    exec setpriv --reuid="$U" --regid="$G" --clear-groups --no-new-privs \
-      waypipe --no-gpu -s /run/waypipe.sock server -- /opt/QQ/qq --no-sandbox \
-        --ozone-platform=wayland --enable-wayland-ime --disable-crash-reporter'
+    # ponytail: about half of the starts hang before the window (cause unknown: QQ waits in its
+    # own JS; not GPU, Xvfb, network or locks). A good start logs initializeMMKV within seconds,
+    # so kill and retry the others. Remove this loop when a new QQ fixes the hang.
+    for try in 1 2 3 4 5; do
+      echo "start $try"
+      setpriv --reuid="$U" --regid="$G" --clear-groups --no-new-privs \
+        waypipe --no-gpu -s /run/waypipe.sock server -- /opt/QQ/qq --no-sandbox \
+          --ozone-platform=wayland --enable-wayland-ime --disable-crash-reporter &
+      pid=$!; i=0
+      while [ $i -lt 20 ] && kill -0 $pid 2>/dev/null && ! grep -q initializeMMKV /home/qq/qq.log; do
+        sleep 1; i=$((i+1))
+      done
+      grep -q initializeMMKV /home/qq/qq.log && { wait $pid; exit; }
+      echo "start $try hung, retrying"; kill $pid
+      # By name: -f /opt/QQ would also match this shell.
+      pkill -x qq; pkill -x chrome_crashpad; sleep 2; pkill -9 -x qq; wait $pid
+    done'

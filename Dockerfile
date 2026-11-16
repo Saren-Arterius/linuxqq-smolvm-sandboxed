@@ -13,7 +13,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends /tmp/QQ.deb \
  && apt-get install -y --no-install-recommends firefox waypipe libasound2t64 libgbm1 libegl1 libgl1-mesa-dri \
       libwayland-client0 libwayland-cursor0 libwayland-egl1 libxkbcommon0 libx11-xcb1 \
-      fonts-noto-cjk fontconfig xdg-utils xvfb \
+      fonts-noto-cjk fontconfig xdg-utils xvfb gdb strace \
  && apt-get purge -y --auto-remove curl \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists /tmp/QQ.deb
